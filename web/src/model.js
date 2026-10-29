@@ -93,7 +93,7 @@ export function analyse(P) {
   let mixed = { exists: false, p: null, q: null };
   if (!near(dp, 0) && !near(dq, 0)) {
     const p = (u("N", "M")[1] - u("N", "W")[1]) / dp, q = (u("N", "M")[0] - u("S", "M")[0]) / dq;
-    if (p > 1e-7 && p < 1 - 1e-7 && q > 1e-7 && q < 1 - 1e-7) mixed = { exists: true, p, q };
+    mixed = { exists: p > 1e-7 && p < 1 - 1e-7 && q > 1e-7 && q < 1 - 1e-7, p, q };  // raw p, q kept so the page can show why it fails
   }
 
   const keys = ["SW", "SM", "NW", "NM"];

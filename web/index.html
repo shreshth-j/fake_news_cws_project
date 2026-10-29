@@ -4,24 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Share Button · Fake News Game Theory</title>
-  <meta name="description" content="A game-theory model of why people share false stories, when a platform steps in, and how far a story travels while they decide." />
-  <meta name="theme-color" content="#ece6d6" />
+  <meta name="description" content="A two-player normal-form game between a content sharer and a platform: best responses, dominant strategies, Nash equilibrium, and a diffusion model of how far a false story spreads." />
+  <meta name="theme-color" content="#090c10" />
   <meta property="og:title" content="The Share Button" />
-  <meta property="og:description" content="Fake news as a game between a sharer and a platform, with a live spread simulation and network lab." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2317140f'/%3E%3Ccircle cx='11' cy='16' r='4' fill='%23ece6d6'/%3E%3Ccircle cx='23' cy='10' r='4' fill='%23c2381f'/%3E%3Ccircle cx='23' cy='23' r='4' fill='%23ece6d6' fill-opacity='.4'/%3E%3C/svg%3E" />
+  <meta property="og:description" content="Fake news as a game between a sharer and a platform: payoff matrix, Nash equilibrium, dominant strategies and a spread simulation." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23090c10'/%3E%3Ccircle cx='11' cy='16' r='4' fill='%23ff6a3d'/%3E%3Ccircle cx='23' cy='10' r='4' fill='%23e6eaee'/%3E%3Ccircle cx='23' cy='23' r='4' fill='%239db4c6' fill-opacity='.7'/%3E%3C/svg%3E" />
+  <script>try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "night"; } catch { document.documentElement.dataset.theme = "night"; }</script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <div class="grain" aria-hidden="true"></div>
+  <div class="glow" id="glow" aria-hidden="true"></div>
 
   <header class="mast" id="top">
     <a class="mast__brand" href="#top" aria-label="The Share Button, back to top">The Share Button</a>
     <nav class="mast__links" aria-label="Sections">
       <a href="#game">The game</a>
       <a href="#spread">Spread</a>
-      <a href="#network">Network</a>
       <a href="#tipping">Tipping point</a>
+      <a href="#concepts">Concepts</a>
       <a href="#team">Team</a>
+      <button type="button" class="theme" id="theme" aria-label="Switch colour theme"><i aria-hidden="true"></i><span id="theme-name">Paper</span></button>
     </nav>
   </header>
 
@@ -29,19 +32,22 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="wrap hero__grid">
         <div class="hero__copy">
-          <p class="kicker">Game theory project · Misinformation, moderation, diffusion</p>
+          <p class="kicker">Game theory project · Normal-form game, Nash equilibrium, diffusion</p>
           <h1 id="hero-title" class="hero__title">
             <span class="line"><span>A false story is a bet.</span></span>
             <span class="line"><span>So is stopping it.</span></span>
           </h1>
-          <p class="hero__sub">A model of what makes someone share, what makes a platform step in, and how far a story travels while the two decide.</p>
+          <p class="hero__sub">A two-player game between a content sharer and a platform, coupled with a diffusion model of how far a false story travels while the two decide.</p>
           <div class="hero__ctas">
-            <a class="btn" href="#spread">Run the simulation</a>
+            <a class="btn" href="#game">See the payoff matrix</a>
             <a class="link" href="/report.docx" download>Read the report</a>
           </div>
+          <ul class="chips" aria-label="Game theory concepts used">
+            <li>Best response</li><li>Dominant strategy</li><li>Nash equilibrium</li><li>Pareto efficiency</li><li>Mixed strategy</li>
+          </ul>
         </div>
         <figure class="hero__fig">
-          <canvas id="hero-net" aria-label="Animation of a false story spreading through a small social network and being moderated"></canvas>
+          <canvas id="hero-net" aria-label="Illustration: a false story spreading through a small synthetic social network and being moderated"></canvas>
           <figcaption class="legend">
             <span><i class="dot dot--s"></i>not reached</span>
             <span><i class="dot dot--e"></i>sharing</span>
@@ -52,13 +58,15 @@
       </div>
     </section>
 
+    <div class="ticker" aria-hidden="true"><div class="ticker__track" id="ticker"></div></div>
+
     <section class="index" aria-label="Contents">
       <div class="wrap">
         <ol class="index__list">
-          <li><a href="#game"><span class="mono">01</span><b>The game</b><span>Sharer against platform, four outcomes, one stable pair.</span></a></li>
-          <li><a href="#spread"><span class="mono">02</span><b>How far it gets</b><span>A contagion curve you can bend with two sliders.</span></a></li>
-          <li><a href="#network"><span class="mono">03</span><b>Who passes it on</b><span>The same story on a network of hubs and on a random one.</span></a></li>
-          <li><a href="#tipping"><span class="mono">04</span><b>The tipping point</b><span>The moderation level where spreading stops paying.</span></a></li>
+          <li><a href="#game"><span class="mono">01</span><b>The strategic game</b><span>Payoff matrix, best responses, dominance and the Nash equilibrium.</span></a></li>
+          <li><a href="#spread"><span class="mono">02</span><b>Diffusion of a story</b><span>A contagion curve that moderation damps.</span></a></li>
+          <li><a href="#tipping"><span class="mono">03</span><b>The tipping point</b><span>The moderation level where spreading stops paying.</span></a></li>
+          <li><a href="#concepts"><span class="mono">04</span><b>Concepts used</b><span>Definitions, with the value each takes in this model.</span></a></li>
         </ol>
       </div>
     </section>
@@ -66,17 +74,28 @@
     <!-- 01 -->
     <section class="chapter" id="game" aria-labelledby="game-title">
       <div class="wrap">
-        <p class="kicker mono">01 · The game</p>
+        <p class="kicker mono">01 · The strategic game</p>
         <h2 id="game-title" class="display reveal">Under strong moderation, staying quiet is the best reply.</h2>
-        <p class="lede reveal">A sharer chooses to spread a false story or not. A platform chooses weak or strong moderation. They choose at the same time. Each cell shows <span class="pa">the sharer's payoff</span> over <span class="pb">the platform's</span>.</p>
+        <p class="lede reveal">Player 1, the <span class="pa">content sharer</span>, chooses S (spread) or N (stay quiet). Player 2, the <span class="pb">platform</span>, chooses W (weak) or M (strong moderation). They move simultaneously. Each cell shows (u₁, u₂).</p>
+        <ul class="chips reveal" aria-label="Concepts in this section">
+          <li>Normal-form game</li><li>Best response</li><li>Strict dominance</li><li>Nash equilibrium</li><li>Pareto efficiency</li>
+        </ul>
 
         <div class="game reveal">
           <div class="game__matrix">
             <div class="matrix" id="matrix" role="grid" aria-label="Payoff matrix"></div>
+            <ul class="key" aria-label="How to read the matrix">
+              <li><u class="pa">5</u><span><b>Underline = best response.</b> The payoff is the highest that player can get against the other's choice (BR₁ for the sharer, BR₂ for the platform).</span></li>
+              <li><i class="tag tag--dom">Dominant</i><span><b>Dominant strategy.</b> It pays more than the alternative whatever the opponent does.</span></li>
+              <li><i class="key__eq"></i><span><b>Nash equilibrium.</b> Both payoffs in the cell are best responses, so neither player gains by switching alone.</span></li>
+            </ul>
             <p class="matrix__explain" id="matrix-explain" aria-live="polite"></p>
           </div>
           <dl class="findings" id="findings"></dl>
         </div>
+
+        <h3 class="sub reveal">Worked solution</h3>
+        <ol class="proof reveal" id="proof"></ol>
 
         <details class="tweak reveal">
           <summary><span>Change the payoffs</span><span class="tweak__now mono" id="payoff-now"></span></summary>
@@ -94,9 +113,12 @@
     <!-- 02 -->
     <section class="chapter" id="spread" aria-labelledby="spread-title">
       <div class="wrap">
-        <p class="kicker mono">02 · How far it gets</p>
+        <p class="kicker mono">02 · Diffusion of a story</p>
         <h2 id="spread-title" class="display reveal">How far a story gets depends on how early it is cut off.</h2>
-        <p class="lede reveal">Each step, the people already reaching others pass it to a share of those who haven't seen it. Moderation removes a fraction of that pull. The grey lines are four fixed policies; the red line is yours.</p>
+        <p class="lede reveal">Each step, the people already reaching others pass the story to a share of those who haven't seen it. Moderation m removes a fraction of that pull, so the effective rate is β(1 − m). The grey lines are four fixed policies; the highlighted line is yours.</p>
+        <ul class="chips reveal" aria-label="Concepts in this section">
+          <li>Logistic growth</li><li>SIR with debunking</li><li>Moderation as a damping parameter</li><li>Comparative statics</li>
+        </ul>
 
         <div class="lab reveal">
           <form class="controls" id="spread-form" aria-label="Spread controls" onsubmit="return false">
@@ -125,44 +147,14 @@
     </section>
 
     <!-- 03 -->
-    <section class="chapter" id="network" aria-labelledby="network-title">
-      <div class="wrap">
-        <p class="kicker mono">03 · Who passes it on</p>
-        <h2 id="network-title" class="display reveal">Same story, same odds. A different network, a different outcome.</h2>
-        <p class="lede reveal">Each active sharer tries to pass the story to every neighbour who hasn't seen it, and the platform may quarantine each sharer. In a scale-free network a few hubs reach most people; in a random one nobody does.</p>
-
-        <div class="lab lab--net reveal">
-          <form class="controls" id="net-form" aria-label="Network controls" onsubmit="return false">
-            <div class="seg" role="radiogroup" aria-label="Network type" id="net-seg">
-              <button type="button" role="radio" aria-checked="true" data-v="scale-free">Scale-free</button>
-              <button type="button" role="radio" aria-checked="false" data-v="random">Random</button>
-            </div>
-            <label class="field"><span>Chance of passing it on <output id="o-spread"></output></span><input type="range" id="spread" min="0.1" max="1" step="0.05" /></label>
-            <label class="field"><span>Moderation m <output id="o-netmod"></output></span><input type="range" id="netmod" min="0" max="0.9" step="0.05" /></label>
-            <label class="field"><span>Starting sharers <output id="o-seeds"></output></span><input type="range" id="seeds" min="1" max="8" step="1" /></label>
-            <div class="row">
-              <button type="button" class="btn btn--sm" id="net-play" aria-pressed="false">Play</button>
-              <button type="button" class="link" id="net-new">New network</button>
-            </div>
-          </form>
-
-          <div class="net">
-            <canvas id="net-canvas" aria-label="Network diagram of the current step"></canvas>
-            <label class="field field--wide"><span>Step <output id="o-step"></output></span><input type="range" id="step" min="0" max="15" step="1" value="0" /></label>
-            <dl class="kpis kpis--3" id="net-kpis"></dl>
-            <svg id="net-chart" viewBox="0 0 800 220" role="img" aria-labelledby="net-desc"></svg>
-            <p id="net-desc" class="sr-only">Reached, active and moderated accounts at each step.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 04 -->
     <section class="chapter" id="tipping" aria-labelledby="tip-title">
       <div class="wrap">
-        <p class="kicker mono">04 · The tipping point</p>
+        <p class="kicker mono">03 · The tipping point</p>
         <h2 id="tip-title" class="display reveal">Past one level of moderation, spreading stops paying.</h2>
-        <p class="lede reveal">Here the payoffs are not fixed. They are built from the simulation: the sharer's reward grows with β, the platform's damage with how far the story reached, and both pay for moderation. Move m and watch the stable outcome flip.</p>
+        <p class="lede reveal">Here the payoffs are not fixed. They are built from the simulation: the sharer's reward grows with β, the platform's damage with how far the story reached, and both pay for moderation. Move m and watch the equilibrium change.</p>
+        <ul class="chips reveal" aria-label="Concepts in this section">
+          <li>Endogenous payoffs</li><li>Threshold strategy</li><li>Equilibrium shift</li>
+        </ul>
 
         <div class="lab lab--tip reveal">
           <div class="chart">
@@ -178,13 +170,23 @@
         </div>
       </div>
     </section>
+
+    <!-- 04 -->
+    <section class="chapter" id="concepts" aria-labelledby="concepts-title">
+      <div class="wrap">
+        <p class="kicker mono">04 · Concepts used</p>
+        <h2 id="concepts-title" class="display reveal">The game theory behind the model.</h2>
+        <p class="lede reveal">Each concept is defined, then shown with the value it takes for the payoffs currently set in section 01.</p>
+        <div class="concepts reveal" id="concepts-list" role="table" aria-label="Game theory concepts"></div>
+      </div>
+    </section>
   </main>
 
   <footer class="footer" id="team">
     <div class="wrap footer__grid">
       <div>
         <p class="footer__title">Interactive Fake News Simulation &amp; Game Theory Laboratory</p>
-        <p class="footer__muted">Payoffs and parameters are illustrative assumptions for a university course, not platform data. The network is a synthetic graph, not a real one.</p>
+        <p class="footer__muted">Payoffs and parameters are illustrative assumptions for a university course, not platform data. The network in the page header is an illustration on a synthetic graph.</p>
         <p class="footer__muted"><a class="link" href="/report.docx" download>Project report (.docx)</a></p>
       </div>
       <ul class="footer__team">
