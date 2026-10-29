@@ -1,0 +1,8 @@
+[theme]
+primaryColor = "#00F0FF"
+
+[server]
+headless = true
+runOnSave = true
+enableCORS = false
+enableXsrfProtection = false
