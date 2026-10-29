@@ -98,11 +98,19 @@ All 27 automated unit tests verify:
 - Pure and mixed-strategy Nash equilibrium solvers with tie handling.
 - Monotonicity of sensitivity sweeps.
 
-### Launch Application
+### Launch the website
+```bash
+cd web
+npm install
+npm run dev
+```
+Open the URL Vite prints (usually `http://localhost:5173`). `npm run build` writes a static site to `web/dist/`. The site runs the model in the browser (`web/src/model.js`), and `tests/test_js_parity.py` checks it against the Python in `src/`.
+
+### Legacy Streamlit app
 ```bash
 streamlit run app.py
 ```
-Open **`http://localhost:8501`** in any web browser.
+Open **`http://localhost:8501`**. Superseded by the website above.
 
 ---
 
